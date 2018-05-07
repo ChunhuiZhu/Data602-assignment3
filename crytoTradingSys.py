@@ -288,12 +288,6 @@ def updatePL(pldf,order,vwapdf):
              pldf=pldf.append(new,ignore_index=True) 
              vwapdf = vwapdf.append({"Symbol":order["Symbol"],'Wap': order["Price"],'Time': order["Time"]}, ignore_index=True) 
     
-
-    print(" end   updatePL")
-    print(pldf)
-    print(order)
-    print(vwapdf)
-    
     return(pldf,vwapdf)
 
 
@@ -639,12 +633,12 @@ def update_pfoliodf(pldf,amount):
 
 
 
-
+#pl, history, vwap, portfolio and account_balance will recorde all time history
 #connect with mongodb at the begining, 
-#if there are datarows in pl and account in mongodb, 
-#recorde pl and account_balance to local variables,  
-#drop the pl and account_balance in mongodb. 
-#new pl and account_balance will reinstore in mongodb at the end
+#if there are datarows in pl, history, vwap, portfolio and account_balance and account in mongodb, 
+#recorde pl, history, vwap, portfolio and account_balance to local variables,  
+#drop pl, history, vwap, portfolio and account_balance in mongodb. 
+#new pl, history, vwap, portfolio and account_balance will reinstore in mongodb at the end
 if __name__=="__main__":
     #creat empty df and list to storage current trade data from Mongodb
     histdf=pd.DataFrame()
