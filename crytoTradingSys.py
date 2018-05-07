@@ -170,7 +170,6 @@ def his100chart(company):
 #updatedprice(symbol) return instant bid/askprice after confirm number of the trade
 #pfoilodf,vwapdf are for account portfolio(cash+assets) and vwap price(per asset) time series chart, which update the recorde when Trade() be selected 
 def Trade(histdf,pldf,amount,pfoilodf,vwapdf):
-  
     company=None
     while not company:
         symbol=str(input("Enter a ticker (exmaple: BTC) : "))
@@ -213,8 +212,9 @@ def Trade(histdf,pldf,amount,pfoilodf,vwapdf):
                     print("Total cost :  ",cost)
                     print("Cash Account : ",amount)
                 
-                    histdf=histdf.append(order, ignore_index=True)
+                    histdf=histdf.append(order,ignore_index=True)
                     pldf,vwapdf=updatePL(pldf,order,vwapdf) 
+
                           
                 #if quantity is negative, recorde add as sell stock with bid price
                 elif quantity<0.0000000000000 :
@@ -224,15 +224,14 @@ def Trade(histdf,pldf,amount,pfoilodf,vwapdf):
                     print("Total cost :  "+ str(cost))  
                     print("Cash Account : ",amount)
                     
-                    histdf=histdf.append(order,ignore_index=True)
+                    histdf=histdf.append(order,ignore_index=True)  
                     pldf,vwapdf=updatePL(pldf,order,vwapdf) 
- 
     
                 #update account portfolio at the time when user get into trade /willing to trade 
-                #recorde the timestamp point at the same time
+                #recorde the time point at the same time
                 #create a series data for total_portfolio chart
                 total_portfolio= update_pfoliodf(pldf,amount)
-                pfoilodf = pfoilodf.append({'Timestamp': order['Time'],'Total Portfolio': total_portfolio}, ignore_index=True) 
+                pfoilodf = pfoilodf.append({'Time': order['Time'],'Total Portfolio': total_portfolio}, ignore_index=True) 
             return(histdf,pldf,amount,pfoilodf,vwapdf)
     else:
             return(histdf,pldf,amount,pfoilodf,vwapdf)
@@ -245,7 +244,7 @@ def Trade(histdf,pldf,amount,pfoilodf,vwapdf):
 #calculate vwap for each assets and apply to time series chart
                   
 def updatePL(pldf,order,vwapdf):
-
+    
     old=pd.DataFrame()
    
     #order=df["Company","Symbol","Side","Volumn","Price","Total Cost","Time", "Cash Position"]
@@ -253,35 +252,48 @@ def updatePL(pldf,order,vwapdf):
     if pldf.empty:
         new={"Symbol":order["Symbol"],"Inventory":order["Volumn"],"Wap":order["Price"],"Rpl":0.00,"Upl":0.00,"Time":order["Time"]} 
         pldf=pldf.append(new,ignore_index=True) 
-
+        vwapdf = vwapdf.append({"Symbol":order["Symbol"],'Wap': order["Price"],'Time': order["Time"]}, ignore_index=True) 
     else:     
         old=pldf.loc[pldf["Symbol"]==order["Symbol"]]
-        #If find a recorde, then drop it from the pldf
-        pldf= pldf.drop(pldf[pldf["Symbol"]==order["Symbol"]].index)
-
-        if order["Volumn"]<0.00 and old["Inventory"][0]>0.00:
-            Rpl=(order["Price"]-old["Wap"][0])*min(abs(order["Volumn"]),abs(old["Inventory"][0]))
-        
-        #if it is short position, buying use ask price 
-        elif order["Volumn"]>0.00 and old["Inventory"][0]<0.00 :
-            Rpl=(old["Wap"][0]-order["Price"])*min(abs(order["Volumn"]),abs(old["Inventory"][0]))    
-        
-        else:
-            Rpl=0.0
-     
-        #For wap (is absolute positive representing a signle price of share of buy and sell:
-        inven=old["Inventory"][0]+order["Volumn"]
-        if( inven!=0.00):
-            Wap=(old["Wap"][0]*old["Inventory"][0]+order["Price"]*order["Volumn"])/inven    
-        else:
-            Wap=0.00
+        if not old.empty:
+            print("")
+            print("rwtretwetregfsdgsdfbfsdgjfdpgifajdpigjapgjfdpj")
             
-        new={"Symbol":order["Symbol"], "Inventory":inven,"Wap":Wap,"Rpl":Rpl,"Upl":0.00,"Time":order["Time"]}
-        pldf=pldf.append(new,ignore_index=True) 
-        
-    vwapdf = vwapdf.append({"Symbol":order["Symbol"],'Wap': Wap,'Timestamp': order["Time"]}, ignore_index=True) 
-    print(" updatePL")
+            #If find a recorde, then drop it from the pldf
+            pldf= pldf.drop(pldf[pldf["Symbol"]==order["Symbol"]].index)
+    
+            if order["Volumn"]<0.00000 and old["Inventory"][0]>0.00000:
+                Rpl=(order["Price"]-old["Wap"][0])*min(abs(order["Volumn"]),abs(old["Inventory"][0]))
+            
+            #if it is short position, buying use ask price 
+            elif order["Volumn"]>0.00000 and old["Inventory"][0]<0.00000 :
+                Rpl=(old["Wap"][0]-order["Price"])*min(abs(order["Volumn"]),abs(old["Inventory"][0]))    
+            
+            else:
+                Rpl=0.00000
+         
+            #For wap (is absolute positive representing a signle price of share of buy and sell:
+            inven=old["Inventory"][0]+order["Volumn"]
+            if( inven!=0.000000):
+                Wap=(old["Wap"][0]*old["Inventory"][0]+order["Price"]*order["Volumn"])/inven    
+            else:
+                Wap=0.00000
+            
+            new={"Symbol":order["Symbol"], "Inventory":inven,"Wap":Wap,"Rpl":Rpl,"Upl":0.00000,"Time":order["Time"]}
+            pldf=pldf.append(new,ignore_index=True) 
+            
+            vwapdf = vwapdf.append({"Symbol":order["Symbol"],'Wap': Wap,'Time': order["Time"]}, ignore_index=True) 
+        else:
+             new={"Symbol":order["Symbol"],"Inventory":order["Volumn"],"Wap":order["Price"],"Rpl":0.00000,"Upl":0.00000,"Time":order["Time"]} 
+             pldf=pldf.append(new,ignore_index=True) 
+             vwapdf = vwapdf.append({"Symbol":order["Symbol"],'Wap': order["Price"],'Time': order["Time"]}, ignore_index=True) 
+    
+
+    print(" end   updatePL")
+    print(pldf)
+    print(order)
     print(vwapdf)
+    
     return(pldf,vwapdf)
 
 
@@ -296,7 +308,7 @@ def updatePL(pldf,order,vwapdf):
 #showPL() is to update the unreal profit/loss using updated ask/bid price to est.
 #Upl is only data will be changed regarding to exist ticker.
 #updateprice() has (tick,askprice,bidprice,time.strftime("%c"))
-#pllist has items as in pl_col=["Symbol", "Inventory","Wap","Rpl","Upl","Time"]
+#pldf has items as in pl_col=["Symbol", "Inventory","Wap","Rpl","Upl","Time"]
 #inventory is negative, to cover short sell, upl use ask price; else use bid price.
 def showPL(pldf):
     
@@ -548,60 +560,60 @@ def pred():
 
 
 #hist_col=["Company","Symbol","Side","Volumn","Price","Total Cost","Time","Cash Account" ]
-#pfoilodf{'Timestamp','Total Portfolio'}
-#vwapdf{"Symbol",'Wap','Timestamp'}
+#pfoilodf{'Time','Total Portfolio'}
+#vwapdf{"Symbol",'Wap','Time'}
 def pfoilio_chart(histdf, pfoilodf, vwapdf):
-    print("in pfolio_char")
-    print(histdf)
-    print(pfoilodf)
-    print("vwapdf")
-    print(vwapdf)
-    
+
+    print("")
     #Time-series chart for cash position in the P/L 
-    print('Cash Account')
-    cash_df = histdf.set_index("Time")
-    fig, ax = plt.subplots()
-    plt.xticks(rotation = 90)
-    plt.xlabel("Timestamp")
+    print("--------------------------------------")
+    print("            Cash Account              ")
+    print("--------------------------------------")
+    plt.scatter(x=histdf['Time'], y=histdf["Cash Account"] , c='r', alpha=0.5)
+    plt.xlabel("Time")
     plt.ylabel("Balance")
     plt.title("Cash Account")
-    cash_df["Cash Account"].plot(ax=ax,figsize=(8, 6))  
     plt.grid(True)
     plt.show()
-   
-    #Time-series chart for  total portfolio in the P/L
-    print('Total Portfolio')
-    pfoilodf = pfoilodf.set_index('Timestamp')
-    fig, ax = plt.subplots()
-    plt.xticks(rotation = 90)
-    plt.xlabel("Timestamp")
-    plt.ylabel("Portfolio")
-    plt.title("Total Portfolio")
-    pfoilodf['Total Portfolio'].plot(ax=ax,figsize=(8, 6))  
-    plt.grid(True)
-    plt.show()
-    
-    Symbol = histdf[1:].Symbol.unique()
-    #Time-series chart for VWAP of each Symbol 
-    print('VWap by Symbol')
 
+
+    print("")
+    #Time-series chart for  total portfolio in the P/L
+    print("--------------------------------------")
+    print("             Total Portfolio          ")
+    print("--------------------------------------")
+    plt.scatter(x=pfoilodf['Time'], y=pfoilodf['Total Portfolio'], c='r', alpha=0.5)
+    plt.xlabel('Time')
+    plt.ylabel('Portfolio')
+    plt.title("Total Portfolio")
+    plt.grid(True)
+    plt.show()
+ 
+    
+    print("")
+    Symbol = histdf.Symbol.unique()
+    #Time-series chart for VWAP of each Symbol 
+    print("--------------------------------------")
+    print("            VWap by Symbol            ")
+    print("--------------------------------------")
     for i in Symbol:
-        plt.scatter(x=vwapdf.loc[vwapdf["Symbol"] == i]['Timestamp'], y=vwapdf.loc[vwapdf["Symbol"] == i]['Wap'], c='r', alpha=0.5)
+        plt.scatter(x=vwapdf.loc[vwapdf["Symbol"] == i]['Time'], y=vwapdf.loc[vwapdf["Symbol"] == i]['Wap'], c='r', alpha=0.5)
         plt.title(i)
-        plt.xlabel('Timestamp')
+        plt.xlabel('Time')
         plt.ylabel('Price')
         plt.grid(True)
         plt.show()
  
                 
-
+    print("")
     #4.d Time-series chart for executed order prices by Symbol
-    print('Executed Trade Prices by Tickers')
-
+    print("--------------------------------------")
+    print("    Executed Trade Prices by Tickers  ")
+    print("--------------------------------------")
     for i in Symbol:
         plt.scatter(x=histdf.loc[histdf["Symbol"] == i]['Time'], y=histdf.loc[histdf["Symbol"] == i]['Price'], c='b', alpha=0.5)
         plt.title(i)
-        plt.xlabel('Timestamp')
+        plt.xlabel('Time')
         plt.ylabel('Price')
         plt.grid(True)
         plt.show()
@@ -659,7 +671,27 @@ if __name__=="__main__":
     else:    
         hist_col=["Company","Symbol","Side","Volumn","Price","Total Cost","Time","Cash Account" ]
         histdf = pd.DataFrame(columns = hist_col)    
-           
+    
+
+    VwapMongo= cl["local"]["vwap"]   
+    if VwapMongo.count() !=0:
+        vwapdf=pd.DataFrame(list(VwapMongo.find()))
+        del vwapdf[list(vwapdf)[-1]]
+        VwapMongo.drop()
+    else:        
+        vwapdf_col=["Symbol","Time","Wap"]
+        vwapdf = pd.DataFrame(columns = vwapdf_col)  
+        
+        
+    pfoiloMongo= cl["local"]["portfolio"]   
+    if pfoiloMongo.count() !=0:
+        pfoilodf=pd.DataFrame(list(pfoiloMongo.find()))
+        del pfoilodf[list(pfoilodf)[-1]]
+        pfoiloMongo.drop()
+    else:        
+        pfoilo_col=["Time","Total Portfolio"]
+        pfoilodf= pd.DataFrame(columns = pfoilo_col)      
+    
     PLMongo= cl["local"]["pl"]
     if PLMongo.count() !=0:
         pldf=pd.DataFrame(list(PLMongo.find()))
@@ -668,6 +700,7 @@ if __name__=="__main__":
     else: 
         pl_col=["Symbol", "Inventory","Wap","Rpl","Upl","Time"]
         pldf = pd.DataFrame(columns = pl_col)  
+ 
     
     AcctMongo= cl["local"]["account"]  #only for recorde the currenct balance 
     if AcctMongo.count() == 0:
@@ -677,7 +710,11 @@ if __name__=="__main__":
         amount=account[0]["Account_Balance"]
         AcctMongo.drop()
         
-        
+   
+
+
+
+     
     print("Your cash account : ",amount)
     
     option=1 
@@ -753,10 +790,10 @@ if __name__=="__main__":
                     #pldf=pldf[["Symbol", "Inventory","Wap","Rpl","Upl","Time"]]
                     print(pldf[::-1])  
                     
-                print("_________________________________________________")   
-            
                 pfoilio_chart(histdf, pfoilodf, vwapdf)
-                      
+                print("_________________________________________________")   
+                
+                
             elif (option==4):
                     print("")
                     print("======================================")
@@ -783,8 +820,11 @@ if __name__=="__main__":
                     #use ".to_dict('records')" method to convert df to dict
                     HistoryMongo.insert_many(histdf.to_dict('records'))
                 if not pldf.empty:         
-                    #use ".to_dict('records')" method to convert df to dict
                     PLMongo.insert_many(pldf.to_dict('records'))
+                if not vwapdf.empty:
+                    VwapMongo.insert_many(vwapdf.to_dict('records'))               
+                if not pfoilodf.empty:         
+                    pfoiloMongo.insert_many(pfoilodf.to_dict('records'))
                 cl.close()
                 print("Good Luck!")
                 print("_________________________________________________")
