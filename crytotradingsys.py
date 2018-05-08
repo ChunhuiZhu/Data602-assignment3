@@ -153,7 +153,7 @@ def his100chart(company):
     
     candlestick2_ohlc(ax, df100["Open"], df100["High"], df100["Low"], df100["Close"], width=1, colorup='g')
     df100.CloseMean.plot(ax=ax)
-    plt.grid()
+    plt.grid(True)
     plt.show()
     
  
@@ -257,7 +257,7 @@ def updatePL(pldf,order,vwapdf):
         old=pldf.loc[pldf["Symbol"]==order["Symbol"]]
         if not old.empty:
             print("")
-            print("rwtretwetregfsdgsdfbfsdgjfdpgifajdpigjapgjfdpj")
+     
             
             #If find a recorde, then drop it from the pldf
             pldf= pldf.drop(pldf[pldf["Symbol"]==order["Symbol"]].index)
@@ -338,7 +338,7 @@ def pfolio():
         numassets=int(input("Enter number of assets in your porfolio (int) : "))
         
         for i in range(0,numassets): 
-            a=str(input("Asset "+str(i)+ " : "))
+            a=str(input("Asset "+str(i+1)+ " : "))
             assets.append(a)
         ndays_return=int(input("Enter # of day's return in your porfolio (int) : "))    
         
@@ -366,7 +366,7 @@ def pfolio():
         log_dr.plot()
         plt.ylabel('Daily Return')
         plt.title('2 yrs History Daily Retrun')
-        plt.grid()
+        plt.grid(True)
         plt.show()
         
         #2.further analysis purpose: breakdow in training and testing sets
@@ -505,12 +505,12 @@ def pred():
     histprice=pd.DataFrame({'A' : []})
     
     print("Suggest at least 2 assets in your prediction,example: bitcoin,zcash,ethereum,ripple.")
-    numassets=int(input("Enter number of assets: "))
+    numassets=int(input("Enter number of assets (int) : "))
     for i in range(0,numassets): 
-        a=str(input("Asset "+str(i)+ " : "))
+        a=str(input("Asset "+str(i+1)+ " : "))
         assets.append(a)
     
-    ndays=int(input("Enter number of day's for the price prediction : "))    
+    ndays=int(input("Enter number of day's for the price prediction (int) : "))    
     
     for k in assets:
             #use 2 yrs daily price 
@@ -684,7 +684,12 @@ if __name__=="__main__":
         pfoiloMongo.drop()
     else:        
         pfoilo_col=["Time","Total Portfolio"]
-        pfoilodf= pd.DataFrame(columns = pfoilo_col)      
+        pfoilodf= pd.DataFrame(columns = pfoilo_col)    
+       
+        
+        
+        
+        
     
     PLMongo= cl["local"]["pl"]
     if PLMongo.count() !=0:
